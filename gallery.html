@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Inspira College Set 2K25</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f9ff;
+            color: #333;
+            text-align: center;
+            overflow-x: hidden;
+        }
+        header {
+            background: #002147;
+            color: white;
+            padding: 25px 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        nav {
+            background: white;
+            padding: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        nav a {
+            color: #002147;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 12px;
+            font-size: 15px;
+        }
+        nav a:hover { color: #4b7bec; }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+        h2 { color: #002147; margin-bottom: 20px; }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+        }
+        .gallery img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+            animation: popIn 0.5s ease-out forwards;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .gallery img:hover {
+            transform: scale(1.08) rotate(1.5deg);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+            z-index: 2;
+            position: relative;
+        }
+        @keyframes popIn {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* floating sparkles background */
+        .sparkle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 18px;
+            opacity: 0.5;
+            animation: floatUp linear infinite;
+            z-index: 0;
+        }
+        @keyframes floatUp {
+            0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10%  { opacity: 0.6; }
+            90%  { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 10, 30, 0.95);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease;
+        }
+        .lightbox.active { display: flex; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 10px;
+            box-shadow: 0 0 40px rgba(255,255,255,0.2);
+            animation: zoomIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            user-select: none;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.7); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .lightbox .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+            transition: transform 0.2s;
+        }
+        .lightbox .close:hover { transform: scale(1.2) rotate(90deg); }
+        .lightbox .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 50px;
+            cursor: pointer;
+            user-select: none;
+            padding: 20px;
+            transition: transform 0.2s, color 0.2s;
+            font-weight: bold;
+        }
+        .lightbox .arrow:hover { color: #4b7bec; transform: translateY(-50%) scale(1.2); }
+        .lightbox .arrow.left  { left: 10px; }
+        .lightbox .arrow.right { right: 10px; }
+        .lightbox .counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 15px;
+            background: rgba(255,255,255,0.12);
+            padding: 6px 16px;
+            border-radius: 20px;
+        }
+        footer {
+            background: #002147;
+            color: white;
+            padding: 15px;
+            font-size: 14px;
+            margin-top: 40px;
+            position: relative;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <header>🎓 Set 2K25 Gallery 🎉</header>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="class.html">Our Class</a>
+        <a href="teacher.html">Our Teacher</a>
+        <a href="gallery.html">Gallery</a>
+    </nav>
+
+    <div class="container">
+        <h2>Our Memories</h2>
+        <div class="gallery" id="gallery"></div>
+    </div>
+
+    <footer>© 2025 Inspira College Set 2K25 | Built by BuildWithZeno</footer>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <span class="close" id="closeBtn">&times;</span>
+        <span class="arrow left"  id="prevBtn">&#10094;</span>
+        <img id="lightboxImg" src="" alt="Memory">
+        <span class="arrow right" id="nextBtn">&#10095;</span>
+        <div class="counter" id="counter"></div>
+    </div>
+
+    <script>
+        const photos = [
+            "a.jpg",
+            "b52752fffe9b78b119458c0a09c34056.jpg",
+            "b52752fffe9b78b119458c0a09c34056.png",
+            "3f3bd7d5eea56c8ca54b0fcd6e4d5b47.png",
+            "9dd75002a3530148866c75aee2e0962b.png",
+            "37cf52f72698b8960476ee5c7a6a8597.png",
+            "88ec69b21e7a6d03b392e90c561d870c.png",
+            "99f0f87ec25f127ccb562d66d57fc592.png",
+            "e04966bc3556282aa339912d0253ad79.png",
+            "3b2ed634bd86d88577512992a7d6b3f5.png",
+            "00879a529a7d71113836baa5dcc31e40.png",
+            "3b87421c3cd982de87add6bc2cbd38ea.png",
+            "238690e1244a08a113984c4a710d0b89.png",
+            "22696178c2f480e00868001430a36d9a.png",
+            "c.png",
+            "IMG-20250727-WA0041.jpg",
+            "IMG-20250727-WA0042.jpg",
+            "IMG-20250727-WA0044.jpg",
+            "IMG-20250727-WA0046.jpg",
+            "IMG-20250728-WA0001.jpg",
+            "IMG-20250728-WA0037.jpg",
+            "IMG-20250728-WA0038.jpg",
+            "IMG-20250728-WA0056.jpg",
+            "IMG-20250728-WA0057.jpg",
+            "IMG-20250728-WA0060.jpg",
+            "IMG-20250728-WA0061.jpg",
+            "IMG-20250728-WA0062.jpg",
+            "IMG-20250728-WA0063.jpg",
+            "IMG-20250729-WA0002.jpg",
+            "IMG-20250729-WA0005.jpg",
+            "IMG-20250729-WA0006.jpg",
+            "IMG-20250729-WA0021.jpg",
+            "IMG-20250729-WA0022.jpg",
+            "IMG-20250729-WA0023.jpg",
+            "IMG-20250729-WA0024.jpg",
+            "IMG-20250729-WA0025.jpg",
+            "IMG-20250729-WA0027.jpg",
+            "IMG-20250729-WA0028.jpg",
+            "IMG-20250729-WA0029.jpg",
+            "IMG-20250729-WA0030.jpg",
+            "IMG-20250729-WA0031.jpg",
+            "IMG-20250729-WA0032.jpg",
+            "IMG-20250729-WA0033.jpg",
+            "IMG-20250729-WA0036.jpg",
+            "IMG-20250729-WA0038.jpg",
+            "IMG-20250729-WA0039.jpg",
+            "IMG-20250729-WA0040.jpg",
+            "IMG-20250729-WA0041.jpg",
+            "IMG-20250729-WA0042.jpg",
+            "IMG-20250729-WA0043.jpg",
+            "IMG-20250729-WA0044.jpg",
+            "IMG-20250729-WA0050.jpg",
+            "IMG-20250729-WA0052.jpg",
+            "IMG-20250729-WA0053.jpg",
+            "IMG-20250813-WA0000.jpg",
+            "IMG-20250923-WA0002.jpg",
+            "IMG-20250923-WA0003.jpg",
+            "IMG-20250926-WA0000.jpg",
+            "IMG-20250926-WA0004.jpg",
+            "IMG-20250926-WA0006.jpg",
+            "IMG-20251005-WA0100.jpg",
+            "IMG-20251005-WA0101.jpg",
+            "IMG-20251005-WA0102.jpg",
+            "IMG-20251005-WA0103.jpg",
+            "IMG-20251005-WA0104.jpg",
+            "IMG-20251005-WA0105.jpg",
+            "IMG-20251005-WA0106.jpg",
+            "IMG-20251005-WA0108.jpg",
+            "IMG-20251005-WA0109.jpg",
+            "IMG-20251005-WA0110.jpg",
+            "IMG-20251005-WA0111.jpg",
+            "IMG-20251005-WA0112.jpg",
+            "IMG-20251005-WA0113.jpg",
+            "IMG-20251005-WA0114.jpg",
+            "IMG-20251005-WA0115.jpg",
+            "IMG-20251005-WA0116.jpg",
+            "IMG-20251005-WA0117.jpg",
+            "IMG-20251005-WA0118.jpg",
+            "IMG-20251005-WA0119.jpg",
+            "IMG-20251005-WA0121.jpg",
+            "IMG-20251005-WA0122.jpg",
+            "IMG-20251005-WA0124.jpg",
+            "IMG-20251005-WA0125.jpg",
+            "IMG-20251005-WA0127.jpg",
+            "IMG-20251005-WA0128.jpg",
+            "IMG-20251005-WA0129.jpg",
+            "IMG-20251005-WA0130.jpg",
+            "IMG-20251005-WA0131.jpg",
+            "IMG-20251005-WA0132.jpg",
+            "IMG-20251005-WA0135.jpg",
+            "IMG-20251005-WA0136.jpg",
+            "IMG-20251005-WA0137.jpg",
+            "IMG-20251005-WA0138.jpg",
+            "IMG-20251005-WA0139.jpg",
+            "IMG-20251005-WA0140.jpg",
+            "IMG-20251005-WA0141.jpg",
+            "IMG-20251005-WA0143.jpg",
+            "IMG-20251005-WA0150.jpg",
+            "IMG-20251014-WA0035.jpg",
+            "IMG-20251014-WA0036.jpg",
+            "IMG-20251005-WA0091.jpg",
+            "IMG-20251005-WA0097.jpg"
+        ];
+
+        // Build gallery + track valid ones
+        const gallery = document.getElementById("gallery");
+        const validPhotos = [];
+
+        photos.forEach((src, i) => {
+            const img = document.createElement("img");
+            img.src = src;
+            img.alt = "Set 2K25 Memory";
+            img.loading = "lazy";
+            img.style.animationDelay = (i * 0.04) + "s";
+            img.onerror = () => img.remove();
+            img.onload = () => validPhotos.push(src);
+            img.addEventListener("click", () => openLightbox(src));
+            gallery.appendChild(img);
+        });
+
+        // Sparkles
+        const sparkleChars = ["✨", "💙", "⭐", "🎓", "💫"];
+        for (let i = 0; i < 18; i++) {
+            const s = document.createElement("div");
+            s.className = "sparkle";
+            s.textContent = sparkleChars[Math.floor(Math.random() * sparkleChars.length)];
+            s.style.left = Math.random() * 100 + "vw";
+            s.style.animationDuration = (10 + Math.random() * 15) + "s";
+            s.style.animationDelay = (Math.random() * 10) + "s";
+            s.style.fontSize = (12 + Math.random() * 14) + "px";
+            document.body.appendChild(s);
+        }
+
+        // Lightbox logic
+        const lightbox   = document.getElementById("lightbox");
+        const lightboxImg= document.getElementById("lightboxImg");
+        const counter    = document.getElementById("counter");
+        let currentIndex = 0;
+
+        function openLightbox(src) {
+            currentIndex = validPhotos.indexOf(src);
+            if (currentIndex === -1) currentIndex = 0;
+            showPhoto();
+            lightbox.classList.add("active");
+        }
+
+        function showPhoto() {
+            lightboxImg.src = validPhotos[currentIndex];
+            counter.textContent = (currentIndex + 1) + " / " + validPhotos.length;
+            // re-trigger zoom animation
+            lightboxImg.style.animation = "none";
+            void lightboxImg.offsetWidth;
+            lightboxImg.style.animation = "zoomIn 0.35s cubic-bezier(0.22, 1, 0.36, 1)";
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove("active");
+        }
+
+        function nextPhoto() {
+            currentIndex = (currentIndex + 1) % validPhotos.length;
+            showPhoto();
+        }
+
+        function prevPhoto() {
+            currentIndex = (currentIndex - 1 + validPhotos.length) % validPhotos.length;
+            showPhoto();
+        }
+
+        document.getElementById("closeBtn").addEventListener("click", closeLightbox);
+        document.getElementById("nextBtn").addEventListener("click", nextPhoto);
+        document.getElementById("prevBtn").addEventListener("click", prevPhoto);
+        lightbox.addEventListener("click", (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (!lightbox.classList.contains("active")) return;
+            if (e.key === "ArrowRight") nextPhoto();
+            if (e.key === "ArrowLeft")  prevPhoto();
+            if (e.key === "Escape")     closeLightbox();
+        });
+    </script>
+</body>
+</html>
